@@ -48,18 +48,20 @@ const ProductsScreens = () => {
   };
 
   const filterData = (key: any) => {
-    let itemList = data;
-    let sortedData = [];
+    console.log('invoke');
+    let sortedData = [...data];
     var value_key = key;
     switch (value_key) {
       case 'hight':
-        sortedData = itemList.sort((a, b) => b.price - a.price);
+        sortedData.sort((a, b) => b.price - a.price);
+        setData([...sortedData]);
         return;
       case 'low':
-        sortedData = itemList.sort((a, b) => a.price - b.price);
+        sortedData.sort((a, b) => a.price - b.price);
+        setData([...sortedData]);
         return;
       case 'name':
-        sortedData = itemList.sort((a, b) => {
+        sortedData.sort((a, b) => {
           const nameA = a.title.toLowerCase();
           const nameB = b.title.toLowerCase();
 
@@ -71,11 +73,11 @@ const ProductsScreens = () => {
           }
           return 0;
         });
+        setData([...sortedData]);
         return;
       default:
         break;
     }
-    setData(sortedData);
   };
 
   const countAmount = () => {
@@ -98,6 +100,9 @@ const ProductsScreens = () => {
   useEffect(() => {
     countAmount();
   }, [data]);
+  useEffect(() => {
+    filterData(value);
+  }, [value]);
   useEffect(() => {
     getProductList();
     return () => {};
@@ -191,10 +196,6 @@ const ProductsScreens = () => {
                     placeholderStyle={{fontWeight: 'bold'}}
                     placeholder="Default"
                     setOpen={setOpen}
-                    onChangeValue={value => {
-                      filterData(value);
-                      setOpen(false);
-                    }}
                     setValue={setValue}
                     setItems={setItems}
                   />
