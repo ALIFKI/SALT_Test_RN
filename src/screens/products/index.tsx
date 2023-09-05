@@ -18,11 +18,13 @@ const ProductsScreens = () => {
       price: number;
       name: string;
       title: string;
+      stock: number;
     }>
   >([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [totalProduct, setTotalProduct] = useState(0);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([
@@ -46,16 +48,19 @@ const ProductsScreens = () => {
 
   const countAmount = () => {
     let items = data;
-    let totalPrice = 0;
+    var totalPrice_ = 0;
+    let totalProduct_ = 0;
     let itemsWithCount = items.filter(item => {
       return item.count >= 1;
     });
 
     itemsWithCount.map(item => {
-      totalPrice += item.count * item.price;
+      totalPrice_ += item.count * item.price;
+      totalProduct_ += item.count;
     });
 
-    setTotalPrice(totalPrice);
+    setTotalPrice(totalPrice_);
+    setTotalProduct(totalProduct_);
   };
 
   useEffect(() => {
@@ -90,6 +95,12 @@ const ProductsScreens = () => {
     }
   };
 
+  const reset = ()=>{
+    getProductList();
+    setTotalPrice(0);
+    setTotalProduct(0);
+  };
+
   return (
     <View style={styles.container}>
       <Header title={'Products List'} subtitle={`${data.length} Products`} />
@@ -98,18 +109,23 @@ const ProductsScreens = () => {
       ) : (
         <>
           <ModalComponent isVisible={modalVisible}>
-            <Text>Success</Text>
-            <Text>
-              You have successfully purchase 4 products with total of Rp.
-              1.225.000. Click close to buy another modems
-            </Text>
-            <Button
-              text="Close"
-              type="full"
-              onClick={() => {
-                setModalVisible(false);
-              }}
-            />
+            <>
+              <Text
+                style={{textAlign: 'center', fontSize: 16, fontWeight: '800'}}>
+                Success
+              </Text>
+              <Text style={{marginVertical: 16}}>
+                You have successfully purchase {totalProduct} products with
+                total of $.{totalPrice} Click close to buy another modems
+              </Text>
+              <Button
+                text="Close"
+                type="full"
+                onClick={() => {
+                  setModalVisible(false);
+                }}
+              />
+            </>
           </ModalComponent>
           <View style={[styles.content]}>
             <View style={[styles.filterSection]}>
@@ -128,7 +144,7 @@ const ProductsScreens = () => {
                       ...styles.boxShadow,
                     }}
                     style={{
-                      width: Dimensions.get('screen').width / 4,
+                      minWidth: Dimensions.get('screen').width / 4,
                       borderColor: '#F0F0F0',
                       backgroundColor: '#F6F6F6',
                     }}
@@ -144,20 +160,23 @@ const ProductsScreens = () => {
                 </View>
               </View>
             </View>
-            <FlatList
-              data={data}
-              renderItem={({item, index}) => (
-                <ListItem
-                  name={item.title}
-                  price={item.price as number}
-                  onPlusPress={onPlusPress}
-                  onMinusPress={onMinusPress}
-                  count={item.count ?? 0}
-                  index={index}
-                />
-              )}
-              keyExtractor={item => item.id}
-            />
+            <View style={{flex : 0.8}}>
+              <FlatList
+                data={data}
+                renderItem={({item, index}) => (
+                  <ListItem
+                    name={item.title}
+                    price={item.price as number}
+                    onPlusPress={onPlusPress}
+                    onMinusPress={onMinusPress}
+                    stock={item.stock}
+                    count={item.count ?? 0}
+                    index={index}
+                  />
+                )}
+                keyExtractor={item => item.id}
+              />
+            </View>
           </View>
           <View style={[styles.footer, styles.boxShadow]}>
             <View style={[styles.amountWrapper]}>
@@ -176,10 +195,10 @@ const ProductsScreens = () => {
               <View style={{marginTop: 10}}>
                 {totalPrice > 0 ? (
                   <Button
-                    text="reset"
+                    text="Reset"
                     type="outline"
                     onClick={function (): void {
-                      console.log('res');
+                      reset();
                     }}
                   />
                 ) : null}

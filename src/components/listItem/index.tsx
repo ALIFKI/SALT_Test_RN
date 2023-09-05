@@ -9,6 +9,7 @@ export interface ItemListProps {
   onMinusPress: (index: number) => void;
   count: number;
   index: number;
+  stock: number;
 }
 const ListItem: FC<ItemListProps> = ({
   name,
@@ -17,10 +18,12 @@ const ListItem: FC<ItemListProps> = ({
   index,
   onMinusPress,
   onPlusPress,
+  stock,
 }) => {
+  console.log(stock,name)
   return (
     <View style={[style.container]}>
-      <View style={{maxWidth: '50%'}}>
+      <View style={{maxWidth: '40%'}}>
         <Text style={[style.textNameProduct]}>{name}</Text>
         <Text style={[style.textSubtitle]}>${price}</Text>
       </View>
@@ -42,10 +45,15 @@ const ListItem: FC<ItemListProps> = ({
           <Text style={[style.textCount]}>{count ?? 0}</Text>
         </View>
         <TouchableOpacity
+          disabled={count == stock ? true : false}
           onPressIn={() => {
             onPlusPress(index);
           }}>
-          <View style={[style.boxAction, style.activeAction]}>
+          <View
+            style={[
+              style.boxAction,
+              count == stock ? style.disabledAction : style.activeAction,
+            ]}>
             <Text style={[style.actiontext]}>+</Text>
           </View>
         </TouchableOpacity>
