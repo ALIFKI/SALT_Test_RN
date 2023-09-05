@@ -28,8 +28,9 @@ const ProductsScreens = () => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([
-    {label: 'Apple', value: 'apple'},
-    {label: 'Banana', value: 'banana'},
+    {label: 'Highest Price', value: 'hight'},
+    {label: 'Lowest Price', value: 'low'},
+    {label: 'Name', value: 'name'},
   ]);
 
   const getProductList = () => {
@@ -44,6 +45,37 @@ const ProductsScreens = () => {
       .catch((err: any) => {
         setLoading(false);
       });
+  };
+
+  const filterData = (key: any) => {
+    let itemList = data;
+    let sortedData = [];
+    var value_key = key;
+    switch (value_key) {
+      case 'hight':
+        sortedData = itemList.sort((a, b) => b.price - a.price);
+        return;
+      case 'low':
+        sortedData = itemList.sort((a, b) => a.price - b.price);
+        return;
+      case 'name':
+        sortedData = itemList.sort((a, b) => {
+          const nameA = a.title.toLowerCase();
+          const nameB = b.title.toLowerCase();
+
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          return 0;
+        });
+        return;
+      default:
+        break;
+    }
+    setData(sortedData);
   };
 
   const countAmount = () => {
@@ -95,13 +127,14 @@ const ProductsScreens = () => {
     }
   };
 
-  const reset = ()=>{
+  const reset = () => {
     getProductList();
     setTotalPrice(0);
     setTotalProduct(0);
   };
 
   return (
+    // <Pressable onPress={() => setOpen(false)} accessible={true}>
     <View style={styles.container}>
       <Header title={'Products List'} subtitle={`${data.length} Products`} />
       {loading ? (
@@ -111,7 +144,11 @@ const ProductsScreens = () => {
           <ModalComponent isVisible={modalVisible}>
             <>
               <Text
-                style={{textAlign: 'center', fontSize: 16, fontWeight: '800'}}>
+                style={{
+                  textAlign: 'center',
+                  fontSize: 16,
+                  fontWeight: '800',
+                }}>
                 Success
               </Text>
               <Text style={{marginVertical: 16}}>
@@ -154,13 +191,17 @@ const ProductsScreens = () => {
                     placeholderStyle={{fontWeight: 'bold'}}
                     placeholder="Default"
                     setOpen={setOpen}
+                    onChangeValue={value => {
+                      filterData(value);
+                      setOpen(false);
+                    }}
                     setValue={setValue}
                     setItems={setItems}
                   />
                 </View>
               </View>
             </View>
-            <View style={{flex : 0.8}}>
+            <View style={{flex: 0.8}}>
               <FlatList
                 data={data}
                 renderItem={({item, index}) => (
@@ -208,6 +249,7 @@ const ProductsScreens = () => {
         </>
       )}
     </View>
+    // </Pressable>
   );
 };
 

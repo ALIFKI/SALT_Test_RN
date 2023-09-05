@@ -20,7 +20,6 @@ const ListItem: FC<ItemListProps> = ({
   onPlusPress,
   stock,
 }) => {
-  console.log(stock,name)
   return (
     <View style={[style.container]}>
       <View style={{maxWidth: '40%'}}>
