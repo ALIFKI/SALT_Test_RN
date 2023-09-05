@@ -11,6 +11,9 @@ const style = StyleSheet.create({
   buttonFull: {
     backgroundColor: '#3A4144',
   },
+  buttonFullDisabled: {
+    backgroundColor: '#CFCFCF',
+  },
   buttonOutline: {
     // backgroundColor: '#fff',
     borderWidth: 2,

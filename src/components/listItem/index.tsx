@@ -4,10 +4,10 @@ import style from './style';
 
 export interface ItemListProps {
   name?: string;
-  price?: string;
+  price?: number;
   onPlusPress: (index: number) => void;
   onMinusPress: (index: number) => void;
-  count?: number;
+  count: number;
   index: number;
 }
 const ListItem: FC<ItemListProps> = ({
@@ -26,6 +26,7 @@ const ListItem: FC<ItemListProps> = ({
       </View>
       <View style={[style.actionWrapper]}>
         <TouchableOpacity
+          disabled={count <= 0 ? true : false}
           onPressIn={() => {
             onMinusPress(index);
           }}>

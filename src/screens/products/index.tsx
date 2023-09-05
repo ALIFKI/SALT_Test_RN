@@ -8,14 +8,21 @@ import {SortIcon} from '../../helper/svg';
 import ListItem from '../../components/listItem';
 import DropDownPicker from 'react-native-dropdown-picker';
 import http from '../../helper/http';
+import ModalComponent from '../../components/modal';
 
 const ProductsScreens = () => {
-  const [data, setData] = useState([
-    {id: 1, title: '', price: '', count: 0},
-    {id: 2, title: '', price: '', count: 0},
-    {id: 3, title: '', price: '', count: 0},
-  ]);
+  const [data, setData] = useState<
+    Array<{
+      id: number;
+      count: number;
+      price: number;
+      name: string;
+      title: string;
+    }>
+  >([]);
   const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([
@@ -24,14 +31,36 @@ const ProductsScreens = () => {
   ]);
 
   const getProductList = () => {
+    setLoading(true);
     http({})
       .get('products')
       .then(res => {
         const {data} = res;
         setData(data?.products);
+        setLoading(false);
+      })
+      .catch((err: any) => {
+        setLoading(false);
       });
   };
 
+  const countAmount = () => {
+    let items = data;
+    let totalPrice = 0;
+    let itemsWithCount = items.filter(item => {
+      return item.count >= 1;
+    });
+
+    itemsWithCount.map(item => {
+      totalPrice += item.count * item.price;
+    });
+
+    setTotalPrice(totalPrice);
+  };
+
+  useEffect(() => {
+    countAmount();
+  }, [data]);
   useEffect(() => {
     getProductList();
     return () => {};
@@ -63,11 +92,25 @@ const ProductsScreens = () => {
 
   return (
     <View style={styles.container}>
-      <Header title={'Products List'} subtitle="3 Products" />
+      <Header title={'Products List'} subtitle={`${data.length} Products`} />
       {loading ? (
         <Loading isLoading />
       ) : (
         <>
+          <ModalComponent isVisible={modalVisible}>
+            <Text>Success</Text>
+            <Text>
+              You have successfully purchase 4 products with total of Rp.
+              1.225.000. Click close to buy another modems
+            </Text>
+            <Button
+              text="Close"
+              type="full"
+              onClick={() => {
+                setModalVisible(false);
+              }}
+            />
+          </ModalComponent>
           <View style={[styles.content]}>
             <View style={[styles.filterSection]}>
               <View style={[styles.filterTextIconWrapper]}>
@@ -106,7 +149,7 @@ const ProductsScreens = () => {
               renderItem={({item, index}) => (
                 <ListItem
                   name={item.title}
-                  price={item.price}
+                  price={item.price as number}
                   onPlusPress={onPlusPress}
                   onMinusPress={onMinusPress}
                   count={item.count ?? 0}
@@ -119,16 +162,28 @@ const ProductsScreens = () => {
           <View style={[styles.footer, styles.boxShadow]}>
             <View style={[styles.amountWrapper]}>
               <Text style={[styles.amount]}>Total: </Text>
-              <Text style={[styles.amount]}>Rp.11000000 </Text>
+              <Text style={[styles.amount]}>$.{totalPrice}</Text>
             </View>
             <View>
               <Button
                 text="Checkout"
                 type="full"
+                disabled={totalPrice <= 0 ? true : false}
                 onClick={function (): void {
-                  throw new Error('Function not implemented.');
+                  setModalVisible(true);
                 }}
               />
+              <View style={{marginTop: 10}}>
+                {totalPrice > 0 ? (
+                  <Button
+                    text="reset"
+                    type="outline"
+                    onClick={function (): void {
+                      console.log('res');
+                    }}
+                  />
+                ) : null}
+              </View>
             </View>
           </View>
         </>

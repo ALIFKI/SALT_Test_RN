@@ -1,4 +1,4 @@
-import {View, Text} from 'react-native';
+import {View, Text, TouchableOpacity} from 'react-native';
 import React, {FC} from 'react';
 import style from './style';
 
@@ -6,9 +6,10 @@ export interface ButtonProps {
   onClick: () => void;
   text: string;
   type?: 'outline' | 'full';
+  disabled?: boolean;
 }
 
-const Button: FC<ButtonProps> = ({text, type}) => {
+const Button: FC<ButtonProps> = ({text, type, onClick, disabled}) => {
   const renderVariant = () => {
     switch (type) {
       case 'outline':
@@ -18,17 +19,21 @@ const Button: FC<ButtonProps> = ({text, type}) => {
         };
       case 'full':
         return {
-          bg: style.buttonFull,
+          bg: disabled ? style.buttonFullDisabled : style.buttonFull,
           colorFont: style.white,
-        }
+        };
       default: {
       }
     }
   };
   return (
-    <View style={[style.buttonContainer, renderVariant()?.bg]}>
-      <Text style={[style.buttonText, renderVariant()?.colorFont]}>{text}</Text>
-    </View>
+    <TouchableOpacity onPress={onClick} disabled={disabled}>
+      <View style={[style.buttonContainer, renderVariant()?.bg]}>
+        <Text style={[style.buttonText, renderVariant()?.colorFont]}>
+          {text}
+        </Text>
+      </View>
+    </TouchableOpacity>
   );
 };
 
