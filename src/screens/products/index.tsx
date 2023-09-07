@@ -1,10 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
-import {StyleSheet, View, Text, FlatList, Dimensions} from 'react-native';
-import React, {useState, useEffect} from 'react';
+import { StyleSheet, View, Text, FlatList, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import Header from '../../components/header';
 import Button from '../../components/button';
 import Loading from '../../components/loading';
-import {SortIcon} from '../../helper/svg';
+import { SortIcon } from '../../helper/svg';
 import ListItem from '../../components/listItem';
 import DropDownPicker from 'react-native-dropdown-picker';
 import http from '../../helper/http';
@@ -13,7 +13,7 @@ import ModalComponent from '../../components/modal';
 const ProductsScreens = () => {
   const [data, setData] = useState<
     Array<{
-      id: number;
+      id: number | string;
       count: number;
       price: number;
       name: string;
@@ -28,9 +28,9 @@ const ProductsScreens = () => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([
-    {label: 'Highest Price', value: 'hight'},
-    {label: 'Lowest Price', value: 'low'},
-    {label: 'Name', value: 'name'},
+    { label: 'Highest Price', value: 'hight' },
+    { label: 'Lowest Price', value: 'low' },
+    { label: 'Name', value: 'name' },
   ]);
 
   const getProductList = () => {
@@ -38,7 +38,7 @@ const ProductsScreens = () => {
     http({})
       .get('products')
       .then(res => {
-        const {data} = res;
+        const { data } = res;
         setData(data?.products);
         setLoading(false);
       })
@@ -47,60 +47,58 @@ const ProductsScreens = () => {
       });
   };
 
-  const filterData = (key: any) => {
-    console.log('invoke');
-    let sortedData = [...data];
-    var value_key = key;
-    switch (value_key) {
-      case 'hight':
-        sortedData.sort((a, b) => b.price - a.price);
-        setData([...sortedData]);
-        return;
-      case 'low':
-        sortedData.sort((a, b) => a.price - b.price);
-        setData([...sortedData]);
-        return;
-      case 'name':
-        sortedData.sort((a, b) => {
-          const nameA = a.title.toLowerCase();
-          const nameB = b.title.toLowerCase();
-
-          if (nameA < nameB) {
-            return -1;
-          }
-          if (nameA > nameB) {
-            return 1;
-          }
-          return 0;
-        });
-        setData([...sortedData]);
-        return;
-      default:
-        break;
-    }
-  };
-
-  const countAmount = () => {
-    let items = data;
-    var totalPrice_ = 0;
-    let totalProduct_ = 0;
-    let itemsWithCount = items.filter(item => {
-      return item.count >= 1;
-    });
-
-    itemsWithCount.map(item => {
-      totalPrice_ += item.count * item.price;
-      totalProduct_ += item.count;
-    });
-
-    setTotalPrice(totalPrice_);
-    setTotalProduct(totalProduct_);
-  };
-
   useEffect(() => {
+    const countAmount = () => {
+      let items = data;
+      var totalPrice_ = 0;
+      let totalProduct_ = 0;
+      let itemsWithCount = items.filter(item => {
+        return item.count >= 1;
+      });
+
+      itemsWithCount.map(item => {
+        totalPrice_ += item.count * item.price;
+        totalProduct_ += item.count;
+      });
+
+      setTotalPrice(totalPrice_);
+      setTotalProduct(totalProduct_);
+    };
     countAmount();
   }, [data]);
   useEffect(() => {
+    const filterData = (key: any) => {
+      console.log('invoke');
+      let sortedData = [...data];
+      var value_key = key;
+      switch (value_key) {
+        case 'hight':
+          sortedData.sort((a, b) => b.price - a.price);
+          setData([...sortedData]);
+          return;
+        case 'low':
+          sortedData.sort((a, b) => a.price - b.price);
+          setData([...sortedData]);
+          return;
+        case 'name':
+          sortedData.sort((a, b) => {
+            const nameA = a.title.toLowerCase();
+            const nameB = b.title.toLowerCase();
+
+            if (nameA < nameB) {
+              return -1;
+            }
+            if (nameA > nameB) {
+              return 1;
+            }
+            return 0;
+          });
+          setData([...sortedData]);
+          return;
+        default:
+          break;
+      }
+    };
     filterData(value);
   }, [value]);
   useEffect(() => {
@@ -156,7 +154,7 @@ const ProductsScreens = () => {
                 }}>
                 Success
               </Text>
-              <Text style={{marginVertical: 16}}>
+              <Text style={{ marginVertical: 16 }}>
                 You have successfully purchase {totalProduct} products with
                 total of $.{totalPrice} Click close to buy another modems
               </Text>
@@ -173,7 +171,7 @@ const ProductsScreens = () => {
             <View style={[styles.filterSection]}>
               <View style={[styles.filterTextIconWrapper]}>
                 <SortIcon />
-                <Text style={[{marginLeft: 10}]}>Sort By:</Text>
+                <Text style={[{ marginLeft: 10 }]}>Sort By:</Text>
               </View>
               <View>
                 <View>
@@ -193,7 +191,7 @@ const ProductsScreens = () => {
                     open={open}
                     value={value}
                     items={items}
-                    placeholderStyle={{fontWeight: 'bold'}}
+                    placeholderStyle={{ fontWeight: 'bold' }}
                     placeholder="Default"
                     setOpen={setOpen}
                     setValue={setValue}
@@ -202,10 +200,10 @@ const ProductsScreens = () => {
                 </View>
               </View>
             </View>
-            <View style={{flex: 0.8}}>
+            <View style={{ flex: 0.8 }}>
               <FlatList
                 data={data}
-                renderItem={({item, index}) => (
+                renderItem={({ item, index }) => (
                   <ListItem
                     name={item.title}
                     price={item.price as number}
@@ -216,7 +214,7 @@ const ProductsScreens = () => {
                     index={index}
                   />
                 )}
-                keyExtractor={item => item.id}
+                keyExtractor={item => item.id as string}
               />
             </View>
           </View>
@@ -234,7 +232,7 @@ const ProductsScreens = () => {
                   setModalVisible(true);
                 }}
               />
-              <View style={{marginTop: 10}}>
+              <View style={{ marginTop: 10 }}>
                 {totalPrice > 0 ? (
                   <Button
                     text="Reset"

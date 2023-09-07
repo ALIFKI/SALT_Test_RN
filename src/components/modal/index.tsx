@@ -1,11 +1,12 @@
-import {View, Text, Modal} from 'react-native';
-import React, {FC} from 'react';
+import { View, Modal } from 'react-native';
+import React, { FC, ReactNode } from 'react';
 import style from './style';
 
 export interface ModalProps {
   isVisible: boolean;
+  children: ReactNode;
 }
-const ModalComponent: FC<ModalProps> = ({children, isVisible}) => {
+const ModalComponent: FC<ModalProps> = ({ children, isVisible }) => {
   return (
     <>
       <Modal visible={isVisible} transparent={true}>
